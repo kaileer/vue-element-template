@@ -60,11 +60,10 @@
 </template>
 
 <script>
-    import bus from '../common/bus';
+    import { mapGetters, mapMutations } from 'vuex'
     export default {
         data() {
             return {
-                collapse: false,
                 items: [
                     {
                         icon: 'el-icon-rank',
@@ -144,15 +143,15 @@
             }
         },
         computed:{
+            ...mapGetters([
+                'collapse'
+            ]),
             onRoutes(){
                 return this.$route.path.replace('/','');
             }
         },
         created(){
-            // 通过 Event Bus 进行组件间通信，来折叠侧边栏
-            bus.$on('collapse', msg => {
-                this.collapse = msg;
-            })
+            
         }
     }
 </script>

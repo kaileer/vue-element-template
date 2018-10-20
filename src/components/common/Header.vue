@@ -45,22 +45,29 @@
 </template>
 <script>
     import bus from '../common/bus';
+    import { mapGetters, mapMutations } from 'vuex'
     export default {
         data() {
             return {
-                collapse: false,
+                // collapse: false,
                 fullscreen: false,
                 name: 'linxin',
                 message: 2
             }
         },
         computed:{
+            ...mapGetters([
+                'collapse'
+            ]),
             username(){
                 let username = localStorage.getItem('ms_username');
                 return username ? username : this.name;
             }
         },
         methods:{
+            ...mapMutations([
+                'set_collapse'
+            ]),
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
@@ -70,8 +77,7 @@
             },
             // 侧边栏折叠
             collapseChage(){
-                this.collapse = !this.collapse;
-                bus.$emit('collapse', this.collapse);
+                this.set_collapse(!this.collapse)
             },
             // 全屏事件
             handleFullScreen(){
