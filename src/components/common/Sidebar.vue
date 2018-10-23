@@ -30,31 +30,45 @@
         </el-menu> -->
         <el-menu class="sidebar-el-menu" :default-active="$route.path" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
-            <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">
-                <template v-if="!item.leaf">
-                    <el-submenu :index="item.path" :key="item.path">
+
+            <template v-for="(item,index) in permission_routers" v-if="!item.meta.hidden">
+
+                <template v-if="!item.meta.leaf">
+                    <el-submenu :index="index+''" :key="index">
+
                         <template slot="title">
-                            <i :class="item.icon"></i><span slot="title">{{ item.name }}</span>
+                            <i :class="item.meta.icon"></i><span slot="title">{{ item.meta.title }}</span>
                         </template>
-                        <template v-for="subItem in item.children">
-                            <el-submenu v-if="subItem.children" :index="subItem.path" :key="subItem.path">
-                                <template slot="title">{{ subItem.name }}</template>
-                                <el-menu-item v-for="(threeItem,i) in subItem.children" :key="i" :index="threeItem.path">
-                                    {{ threeItem.name }}
+
+                        <template v-for="(subItem, y) in item.children" v-if="!subItem.meta.hidden">
+
+                            <el-submenu v-if="subItem.children" :index="y+'-'" :key="y">
+
+                                <template slot="title">{{ subItem.meta.title }}</template>
+
+                                <el-menu-item v-for="(threeItem,i) in subItem.children" :key="i" :index="threeItem.path" v-if="!threeItem.meta.hidden">
+                                    {{ threeItem.meta.title }}
                                 </el-menu-item>
+
                             </el-submenu>
+
                             <el-menu-item v-else :index="subItem.path" :key="subItem.path">
-                                {{ subItem.name }}
+                                {{ subItem.meta.title }}
                             </el-menu-item>
+
                         </template>
+
                     </el-submenu>
                 </template>
+
                 <template v-else>
-                    <el-menu-item :index="item.children[0].path" :key="item.children[0].path" v-if="item.leaf">
-                        <i :class="item.icon"></i><span slot="title">{{ item.name }}</span>
+                    <el-menu-item :index="item.children[0].path" :key="item.children[0].path">
+                        <i :class="item.meta.icon"></i><span slot="title">{{ item.meta.title }}</span>
                     </el-menu-item>
                 </template>
+
             </template>
+
         </el-menu>
     </div>
 </template>
@@ -144,7 +158,8 @@
         },
         computed:{
             ...mapGetters([
-                'collapse'
+                'collapse',
+                'permission_routers'
             ]),
             onRoutes(){
                 return this.$route.path.replace('/','');

@@ -2,94 +2,167 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 const home = resolve => require(['./components/common/Home.vue'], resolve)
+const empty = resolve => require(['./components/common/Empty.vue'], resolve)
 
 Vue.use(Router);
 
-export default new Router({
-    routes: [
-        {
-            path: '/',
-            hidden: true,
-            redirect: '/dashboard'
-        },
-        {
-            path: '/',
-            component: home,
-            name: '自述文件',
+export const constantRouterMap = [
+    {
+        path: '/',
+        redirect: '/dashboard',
+        meta: {
+            title: '🐖',
             icon: 'el-icon-message',
-            leaf: true,
-            children: [
-                { path: '/dashboard', component: resolve => require(['./views/Dashboard.vue'], resolve), name: '自述文件'}
-            ]
-        },
-        {
-            path: '/',
-            component: home,
-            name: '表单相关',
-            icon: 'el-icon-message',
-            children: [
-                {
-                    path: '/form',
-                    component: resolve => require(['./views/BaseForm.vue'], resolve),
-                    name: '基本表单'
-                },
-                { 
-                    path: '/BaseForm',
-                    component: resolve => require(['./views/BaseForm.vue'], resolve),
-                    name: '三级菜单',
-                    children: [
-                        {
-                            path: '/editor',
-                            name: '富文本编辑器组件',
-                            component: resolve => require(['./views/VueEditor.vue'], resolve)
-                        },
-                        {
-                            path: '/markdown',
-                            component: resolve => require(['./views/Markdown.vue'], resolve),
-                            name: 'markdown编辑器'   
-                        }
-                    ]
-                },
-                {
-                    path: '/upload',
-                    name: '文件上传',
-                    component: resolve => require(['./views/Upload.vue'], resolve)
-                }
-            ]
-        },
-        {
-            path: '/',
-            name: '权限测试',
-            component: home,
-            leaf: true,
-            icon: 'el-icon-message',
-            children: [
-                {
-                    // 权限页面
-                    path: '/permission',
-                    name: '权限测试1',
-                    component: resolve => require(['./views/Permission.vue'], resolve)
-                }
-            ]
-        },
-        {
-            path: '/login',
-            name: '登录',
             hidden: true,
-            component: resolve => require(['./views/Login.vue'], resolve)
-        },
-        {
-            path: '/404',
-            name: '404',
-            hidden: true,
-            component: resolve => require(['./views/404.vue'], resolve)
-            
-        },
-        {
-            path: '*',
-            name: '404',
-            hidden: true,
-            redirect: '/404'
+            leaf: false
         }
-    ]
+    },
+    {
+        path: '/login',
+        component: resolve => require(['@/views/Login.vue'], resolve),
+        meta: {
+            title: '登录',
+            hidden: true,
+            roles: ['admin']
+        }
+    },
+    {
+        path: '/404',
+        component: resolve => require(['@/views/404.vue'], resolve),
+        meta: {
+            title: '404',
+            hidden: true
+        }
+        
+    },
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '自述文件',
+            icon: 'iconfont icon-shouji',
+            leaf: true
+        },
+        children: [
+            {
+                path: '/dashboard',
+                component: resolve => require(['@/views/Dashboard.vue'], resolve)
+            }
+        ]
+    }
+
+
+]
+
+export default new Router({
+    // mode:'history',
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRouterMap
 })
+
+export const asyncRouterMap = [
+    
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '销售管理1',
+            icon: 'el-icon-message',
+        },
+        children: [
+            { 
+                path: '/salesManagement',
+                component: empty,
+                meta: {
+                    title: '销售管理',
+                },
+                children: [
+                    {
+                        path: '/salesManagement/list',
+                        component: resolve => require(['@/views/salesManagement/list.vue'], resolve),
+                        meta: {
+                            title: '销售管理'
+                        }
+                    },
+                    {
+                        path: '/salesManagement/edit',
+                        component: resolve => require(['@/views/salesManagement/edit.vue'], resolve),
+                        meta: {
+                            title: '销售管理'
+                        } 
+                    }
+                ]
+            },
+            { 
+                path: '/newCarManagement',
+                component: resolve => require(['@/views/BaseTable.vue'], resolve),
+                meta: {
+                    title: '新车采购管理',
+                },
+                children: [
+                    {
+                        path: '/newCarManagement/list',
+                        component: resolve => require(['@/views/salesManagement/list.vue'], resolve),
+                        meta: {
+                            title: '销售管理'
+                        }
+                    },
+                    {
+                        path: '/newCarManagement/edit',
+                        component: resolve => require(['@/views/salesManagement/edit.vue'], resolve),
+                        meta: {
+                            title: '销售管理'
+                        } 
+                    }
+                ]
+            },
+            {
+                path: '/salesSet',
+                component: resolve => require(['@/views/Upload.vue'], resolve),
+                meta: {
+                    title: '销售流程设置'
+                }
+            }
+        ]
+    },
+    
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '基础表格',
+            icon: 'el-icon-message',
+            leaf: true
+        },
+        children: [
+            {
+                path: '/table',
+                component: resolve => require(['@/views/BaseTable.vue'], resolve)
+            }
+        ]
+    },
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '权限测试',
+            icon: 'el-icon-message',
+            leaf: true,
+            roles: ['adssssmin']
+        },
+        children: [
+            {
+                path: '/permission',
+                component: resolve => require(['@/views/Permission.vue'], resolve)
+            }
+        ]
+    },
+    {
+        path: '*',
+        redirect: '/404',
+        meta: {
+            title: '404',
+            hidden: true
+        },
+    }
+]

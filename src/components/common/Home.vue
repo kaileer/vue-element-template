@@ -3,13 +3,26 @@
         <v-head></v-head>
         <v-sidebar></v-sidebar>
         <div class="content-box" :class="{'content-collapse':collapse}">
-            <v-tags></v-tags>
+            <!-- <v-tags></v-tags> -->
             <div class="content">
-                <transition name="move" mode="out-in">
-                    <keep-alive :include="tagsList">
-                        <router-view></router-view>
-                    </keep-alive>
-                </transition>
+                <div class="clearfix">
+                    <el-col :span="24" class="breadcrumb-container">
+                        <strong class="title">{{$route.meta.title}}</strong>
+                        <el-breadcrumb separator="/" class="pull-right">
+                            <el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
+                                {{ item.meta.title }}
+                            </el-breadcrumb-item>
+                        </el-breadcrumb>
+                    </el-col>
+                    <el-col :span="24" class="content-wrapper">
+                        <transition name="fade" mode="out-in">
+                            <keep-alive :include="tagsList">
+                                <router-view></router-view>
+                            </keep-alive>
+                        </transition>
+                    </el-col>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -47,3 +60,9 @@
         }
     }
 </script>
+
+<style type="scss" scoped>
+    .breadcrumb-container{
+        padding:10px 0;
+    }
+</style>

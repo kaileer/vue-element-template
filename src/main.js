@@ -5,15 +5,17 @@ import store from './store'
 import axios from 'axios';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
-// import '../public/css/theme-green/index.css';       // 浅绿色主题
 import '../public/css/main.css';
+import '@/assets/scss/public.scss';
+import '@/api/request.js'
+import './permission.js'
 
 
 Vue.use(ElementUI, { size: 'small' });
 Vue.prototype.$axios = axios;
 
 //使用钩子函数对路由进行权限跳转
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
     const role = localStorage.getItem('ms_username');
     if(!role && to.path !== '/login'){
         next('/login');
@@ -30,7 +32,7 @@ router.beforeEach((to, from, next) => {
             next();
         }
     }
-})
+})*/
 
 new Vue({
     router,

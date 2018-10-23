@@ -2,12 +2,10 @@ import axios from 'axios'
 import Qs from 'qs'
 import { Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
 
-const service = axios.create({
-    baseURL: process.env.BASE_API,
-    timeout: 5000
-})
+axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? 'xxx.com' : '/mock';
+axios.defaults.headers.common['Authorization'] = 'AUTH_TOKEN';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 /**
  * 获取token
@@ -40,14 +38,13 @@ function encrypt(word){
     return encrypted;
 }
 
-service.interceptors.request.use(config => {
-    let xtoken = config.url.indexOf('doLogin') > -1 ? '' : getToken();
+axios.interceptors.request.use(config => {
+    /*let xtoken = config.url.indexOf('doLogin') > -1 ? '' : getToken();
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-    
     if(xtoken != null){
         config.headers['Authorization'] = xtoken;
         localStorage.setItem("Authorization", xtoken);
-    }
+    }*/
     //login  加密开始
     /*if( config.url.indexOf('doLogin') > -1){
         let str=encrypt(JSON.stringify(config.data));
@@ -55,35 +52,24 @@ service.interceptors.request.use(config => {
         config.data.data=str;
     }*/
     //login  加密结束
-    if(config.method=='post'){
-        config.data = {
-            ...config.data,
-            _t: Date.parse(new Date())/1000,
-        }
-        config.data = Qs.stringify(config.data);
-    }else if(config.method=='get'){
-        config.params = {
-            _t: Date.parse(new Date())/1000,
-            ...config.params
-        }
-    }
+    config.data = Qs.stringify(config.data);
     return config
 },function(error){
     return Promise.reject(error)
 })
 
-service.interceptors.response.use(response => {
-    if(response.data.code != 0){
-        if (response.data.code == 200000401){
+axios.interceptors.response.use(response => {
+    if(response.data.success != true){
+        /*if (response.data.code == 200000401){
             mcVue.$message.error('登录已过期，请重新登录');
             localStorage.clear();
             router.replace({
                 path: '/login',
                 query: {redirect: router.currentRoute.fullPath}
             })
-        }
+        }*/
         
-        mcVue.$message.error(response.data.msg);
+        // mcVue.$message.error(response.data.msg);
         
         return new Promise(() => {});
     }else{
@@ -94,5 +80,3 @@ service.interceptors.response.use(response => {
 }, function (error) {
     return Promise.reject(error)
 })
-
-export default service

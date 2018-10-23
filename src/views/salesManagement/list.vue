@@ -1,20 +1,26 @@
 <template>
     <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="container">
-            <div class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-                    <el-option key="1" label="广东省" value="广东省"></el-option>
-                    <el-option key="2" label="湖南省" value="湖南省"></el-option>
-                </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
-            </div>
+            <el-form ref="filtersForm" :inline="true" :model="filters" class="toolbar">
+                <el-form-item label="销售单号" :inline="true">
+                    <el-input v-model.trim="filters.movieID" placeholder="请输入销售单号"></el-input>
+                </el-form-item>
+                <el-form-item label="客户名称" :inline="true">
+                    <el-input v-model.trim="filters.movieName" placeholder="请输入影片名"></el-input>
+                </el-form-item>
+                <el-form-item label="订单阶段">
+                    <el-select v-model="filters.value" placeholder="请选择">
+                        <el-option
+                            v-for="item in options"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-button>搜索</el-button>
+                <el-button type="primary" icon="plus" @click="choose_customer">新建</el-button>
+            </el-form>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="date" label="日期" sortable width="150">
@@ -25,8 +31,12 @@
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-view" @click="">查看</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button type="text" icon="el-icon-view" @click="">处理</el-button>
+                        <el-button type="text" icon="el-icon-view" @click="">审核</el-button>
+                        <el-button type="text" icon="el-icon-view" @click="event_refund">申请退款</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -35,23 +45,54 @@
                 </el-pagination>
             </div>
         </div>
+        
+        <!-- 选择客户 -->
+        <el-dialog title="选择客户" :visible.sync="dialog_customer" width="50%">
+            <el-form ref="filtersForm" :inline="true" :model="filters">
+                <el-row :gutter="24">
+                    <el-form-item label="销售单号" :inline="true">
+                        <el-input v-model.trim="filters.movieID" placeholder="请输入销售单号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="客户名称" :inline="true">
+                        <el-input v-model.trim="filters.movieName" placeholder="请输入影片名"></el-input>
+                    </el-form-item>
+                    <el-button>搜索</el-button>
+                </el-row>
+            </el-form>
+            <el-table :data="data" border ref="multipleTable">
+                <el-table-column prop="date" label="日期" sortable width="150">
+                </el-table-column>
+                <el-table-column prop="name" label="姓名" width="120">
+                </el-table-column>
+                <el-table-column prop="address" label="地址" :formatter="formatter">
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialog_customer = false">取 消</el-button>
+                <el-button type="primary" @click="">确 定</el-button>
+            </span>
+        </el-dialog>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+        <!-- 申请退款 -->
+        <el-dialog title="申请退款" :visible.sync="dialog_refund" width="50%">
+            <el-form ref="form_refund" :model="form_refund" label-width="80px">
+                <el-form-item label="退款原因">
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="form_refund.address"></el-input>
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="补充资料">
+                    <el-upload
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        list-type="picture-card">
+                        <i class="el-icon-plus"></i>
+                    </el-upload>
+                        <el-dialog :visible.sync="dialogVisible">
+                        <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
+                
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
+                <el-button @click="dialog_refund = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
         </el-dialog>
@@ -73,21 +114,49 @@
         name: 'basetable',
         data() {
             return {
-                url: 'vuetable.json',
                 tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
                 del_list: [],
-                is_search: false,
-                editVisible: false,
+                is_search: true,
+                dialog_refund: false,
                 delVisible: false,
-                form: {
+                dialog_customer: false,
+                dialogImageUrl: '',
+                dialogVisible: false,
+                filtersForm: {
                     name: '',
                     date: '',
                     address: ''
                 },
+                form_refund: {
+                    name: '',
+                    date: '',
+                    address: ''
+                },
+                filters: {
+                    movieID:'',
+                    movieName:'',
+                    value:'3'
+                },
+                options: [{
+                    value: '1',
+                    label: '黄金糕'
+                }, {
+                    value: '2',
+                    label: '双皮奶'
+                }, {
+                    value: '3',
+                    label: '蚵仔煎'
+                }, {
+                    value: '4',
+                    label: '龙须面'
+                }, {
+                    value: '5',
+                    label: '北京烤鸭'
+                }],
                 idx: -1
             }
         },
@@ -116,6 +185,10 @@
             }
         },
         methods: {
+            // 选择客户
+            choose_customer(data){
+                this.dialog_customer = true
+            },
             // 分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
@@ -152,12 +225,12 @@
             handleEdit(index, row) {
                 this.idx = index;
                 const item = this.tableData[index];
-                this.form = {
+                this.form_refund = {
                     name: item.name,
                     date: item.date,
                     address: item.address
                 }
-                this.editVisible = true;
+                this.dialog_refund = true;
             },
             handleDelete(index, row) {
                 this.idx = index;
@@ -178,8 +251,8 @@
             },
             // 保存编辑
             saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
+                this.$set(this.tableData, this.idx, this.form_refund);
+                this.dialog_refund = false;
                 this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
             // 确定删除
@@ -187,6 +260,9 @@
                 this.tableData.splice(this.idx, 1);
                 this.$message.success('删除成功');
                 this.delVisible = false;
+            },
+            event_refund(){
+                this.dialog_refund = true
             }
         }
     }

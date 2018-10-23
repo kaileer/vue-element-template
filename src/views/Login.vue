@@ -2,19 +2,19 @@
     <div class="login-wrap">
         <div class="ms-login">
             <div class="ms-title">后台管理系统</div>
-            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
+            <el-form :model="login_form" :rules="login_rules" ref="login_form" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="ruleForm.username" placeholder="username">
+                    <el-input v-model="login_form.username" placeholder="username">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')">
+                    <el-input type="password" placeholder="password" v-model="login_form.password" @keyup.enter.native="submitForm('login_form')">
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                    <el-button type="primary" @click="submitForm('login_form')">登录</el-button>
                 </div>
                 <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
@@ -26,11 +26,11 @@
     export default {
         data: function(){
             return {
-                ruleForm: {
+                login_form: {
                     username: 'admin',
                     password: '123123'
                 },
-                rules: {
+                login_rules: {
                     username: [
                         { required: true, message: '请输入用户名', trigger: 'blur' }
                     ],
@@ -44,8 +44,13 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        localStorage.setItem('ms_username',this.ruleForm.username);
-                        this.$router.push('/');
+                        /*localStorage.setItem('user',this.login_form.username);
+                        this.$router.push('/');*/
+                        this.$store.dispatch('LoginByUsername', this.login_form).then(() => {
+                            this.$router.push({ path: '/' })
+                        }).catch(() => {
+
+                        })
                     } else {
                         console.log('error submit!!');
                         return false;

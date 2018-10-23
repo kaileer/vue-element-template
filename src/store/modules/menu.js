@@ -1,7 +1,7 @@
 
 const menu = {
     state: {
-        collapse: true,
+        collapse: false,
     },
 
     mutations: {

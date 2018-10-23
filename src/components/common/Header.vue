@@ -60,7 +60,7 @@
                 'collapse'
             ]),
             username(){
-                let username = localStorage.getItem('ms_username');
+                let username = localStorage.getItem('username');
                 return username ? username : this.name;
             }
         },
@@ -71,8 +71,11 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
-                    this.$router.push('/login');
+                    /*localStorage.removeItem('username')
+                    this.$router.push('/login');*/
+                    this.$store.dispatch('LogOut').then(res => {
+                        this.$router.push('/login');
+                    })
                 }
             },
             // 侧边栏折叠
