@@ -3,9 +3,17 @@ import Qs from 'qs'
 import { Message } from 'element-ui'
 import store from '@/store'
 
-axios.defaults.baseURL = process.env.NODE_ENV == 'production' ? 'xxx.com' : '/mock';
-axios.defaults.headers.common['Authorization'] = 'AUTH_TOKEN';
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+const service = axios.create({
+    // baseURL: process.env.BASE_API
+})
+
+
+service.defaults.baseURL = process.env.NODE_ENV == 'production' ? 'xxx.com' : '/mock';
+service.defaults.headers.common['Authorization'] = 'AUTH_TOKEN';
+service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+
 
 /**
  * 获取token
@@ -38,7 +46,7 @@ function encrypt(word){
     return encrypted;
 }
 
-axios.interceptors.request.use(config => {
+service.interceptors.request.use(config => {
     /*let xtoken = config.url.indexOf('doLogin') > -1 ? '' : getToken();
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     if(xtoken != null){
@@ -58,7 +66,7 @@ axios.interceptors.request.use(config => {
     return Promise.reject(error)
 })
 
-axios.interceptors.response.use(response => {
+service.interceptors.response.use(response => {
     if(response.data.success != true){
         /*if (response.data.code == 200000401){
             mcVue.$message.error('登录已过期，请重新登录');
@@ -80,3 +88,5 @@ axios.interceptors.response.use(response => {
 }, function (error) {
     return Promise.reject(error)
 })
+
+export default service

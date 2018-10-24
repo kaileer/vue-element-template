@@ -49,6 +49,36 @@ export const constantRouterMap = [
                 component: resolve => require(['@/views/Dashboard.vue'], resolve)
             }
         ]
+    },
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '导出',
+            icon: 'iconfont icon-shouji',
+            leaf: true
+        },
+        children: [
+            {
+                path: '/export-excel',
+                component: resolve => require(['@/views/export-excel.vue'], resolve)
+            }
+        ]
+    },
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '导出',
+            icon: 'iconfont icon-shouji',
+            leaf: true
+        },
+        children: [
+            {
+                path: '/upload-excel',
+                component: resolve => require(['@/views/upload-excel.vue'], resolve)
+            }
+        ]
     }
 
 
@@ -62,7 +92,7 @@ export default new Router({
 
 export const asyncRouterMap = [
     
-    {
+    /*{
         path: '/',
         component: home,
         meta: {
@@ -71,22 +101,22 @@ export const asyncRouterMap = [
         },
         children: [
             { 
-                path: '/salesManagement',
+                path: '/SalesManagement',
                 component: empty,
                 meta: {
                     title: '销售管理',
                 },
                 children: [
                     {
-                        path: '/salesManagement/list',
-                        component: resolve => require(['@/views/salesManagement/list.vue'], resolve),
+                        path: '/SalesManagement/list',
+                        component: resolve => require(['@/views/SalesManagement/list.vue'], resolve),
                         meta: {
                             title: '销售管理'
                         }
                     },
                     {
-                        path: '/salesManagement/edit',
-                        component: resolve => require(['@/views/salesManagement/edit.vue'], resolve),
+                        path: '/SalesManagement/edit',
+                        component: resolve => require(['@/views/SalesManagement/edit.vue'], resolve),
                         meta: {
                             title: '销售管理'
                         } 
@@ -102,14 +132,14 @@ export const asyncRouterMap = [
                 children: [
                     {
                         path: '/newCarManagement/list',
-                        component: resolve => require(['@/views/salesManagement/list.vue'], resolve),
+                        component: resolve => require(['@/views/SalesManagement/list.vue'], resolve),
                         meta: {
                             title: '销售管理'
                         }
                     },
                     {
                         path: '/newCarManagement/edit',
-                        component: resolve => require(['@/views/salesManagement/edit.vue'], resolve),
+                        component: resolve => require(['@/views/SalesManagement/edit.vue'], resolve),
                         meta: {
                             title: '销售管理'
                         } 
@@ -124,7 +154,7 @@ export const asyncRouterMap = [
                 }
             }
         ]
-    },
+    },*/
     
     {
         path: '/',
@@ -138,6 +168,21 @@ export const asyncRouterMap = [
             {
                 path: '/table',
                 component: resolve => require(['@/views/BaseTable.vue'], resolve)
+            }
+        ]
+    },
+    {
+        path: '/',
+        component: home,
+        meta: {
+            title: '组件',
+            icon: 'el-icon-message',
+            leaf: true
+        },
+        children: [
+            {
+                path: '/zujian',
+                component: resolve => require(['@/views/zujian.vue'], resolve)
             }
         ]
     },

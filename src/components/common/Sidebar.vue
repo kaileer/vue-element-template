@@ -31,8 +31,7 @@
         <el-menu class="sidebar-el-menu" :default-active="$route.path" :collapse="collapse" background-color="#324157"
             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
 
-            <template v-for="(item,index) in permission_routers" v-if="!item.meta.hidden">
-
+            <template v-for="(item,index) in isItemHidden">
                 <template v-if="!item.meta.leaf">
                     <el-submenu :index="index+''" :key="index">
 
@@ -163,6 +162,11 @@
             ]),
             onRoutes(){
                 return this.$route.path.replace('/','');
+            },
+            isItemHidden(){
+                return this.permission_routers.filter(o => {
+                    return !o.meta.hidden;
+                })
             }
         },
         created(){

@@ -7,12 +7,16 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';    // 默认主题
 import '../public/css/main.css';
 import '@/assets/scss/public.scss';
-import '@/api/request.js'
+// import '@/api/request.js'
 import './permission.js'
+import preview from 'vue-photo-preview'
+import 'vue-photo-preview/dist/skin.css'
 
+Vue.prototype.$axios = axios;
 
 Vue.use(ElementUI, { size: 'small' });
-Vue.prototype.$axios = axios;
+
+Vue.use(preview)
 
 //使用钩子函数对路由进行权限跳转
 /*router.beforeEach((to, from, next) => {

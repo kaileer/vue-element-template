@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading="loading">
         <el-row :gutter="20">
             <el-col :span="8">
                 <el-card shadow="hover" class="mgb20" style="height:252px;">
@@ -101,17 +101,27 @@
                 </el-card>
             </el-col>
         </el-row>
+        <zujian uname="ajsfgjas" @ontransmit="ontransmit"></zujian>
+        <imagesView :urls="urls" @evloading="evloading"></imagesView>
     </div>
 </template>
 
 <script>
     import Schart from 'vue-schart';
     import bus from '../components/common/bus';
+    import zujian from './zujian'
+    import imagesView from './imagesView'
     import { mapGetters } from 'vuex'
     export default {
         name: 'dashboard',
         data() {
             return {
+                uname: '',
+                loading: false,
+                urls: [
+                    './img/img.jpg',
+                    './img/img.jpg'
+                ],
                 name: localStorage.getItem('ms_username'),
                 todoList: [{
                         title: '今天要修复100个bug',
@@ -185,7 +195,9 @@
             }
         },
         components: {
-            Schart
+            Schart,
+            zujian,
+            imagesView
         },
         computed: {
             ...mapGetters([
@@ -211,6 +223,13 @@
             }
         },
         methods: {
+            evloading(v){
+                this.loading = v;
+            },
+            ontransmit(ddd){
+                this.uname = ddd
+                console.log(ddd)
+            },
             changeDate(){
                 const now = new Date().getTime();
                 this.data.forEach((item, index) => {

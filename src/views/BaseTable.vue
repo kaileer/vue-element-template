@@ -21,7 +21,13 @@
                 </el-table-column>
                 <el-table-column prop="name" label="姓名" width="120">
                 </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
+                <el-table-column prop="address" label="地址">
+                    <template slot-scope="{row, $index}">
+                        <div @dblclick="changeCell(row, $index)">
+                            <input :id="`editCell${$index}`" v-if="isCellEdit[$index] == true" type="text" v-model="row.address" @blur="submitCell(row.address,$index)" @keyup.enter="submitCell(row.address,$index)">
+                            <span v-else>{{row.address}}</span>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
@@ -75,6 +81,7 @@
             return {
                 url: 'vuetable.json',
                 tableData: [],
+                isCellEdit: null,
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
@@ -116,6 +123,21 @@
             }
         },
         methods: {
+            changeCell(row, index){
+                // this.isCellEdit[index] = true;
+                this.$set(this.isCellEdit,index,true)
+                setTimeout(function () {
+                    document.getElementById(`editCell${index}`).focus();
+                    console.log(document.getElementById(`editCell${index}`))
+                },200)
+            },
+            submitCell(value, index){
+                if(value == 1){
+                    this.$message.warning('格式不正确')
+                    return false;
+                }
+                this.$set(this.isCellEdit,index,false)
+            },
             // 分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
@@ -129,6 +151,7 @@
                 };*/
                 tableApi({page: this.cur_page}).then(res => {
                     this.tableData = res.data.list;
+                    this.isCellEdit = new Array(this.tableData.length)
                 })
                 
                 /*this.$axios.get(this.url, {
